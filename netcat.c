@@ -224,32 +224,32 @@ static int helpme(); /* oop */
 
 static void res_init()
 {
-WORD wVersionRequested; 
-WSADATA wsaData; 
-int err; 
-wVersionRequested = MAKEWORD(1, 1); 
- 
-err = WSAStartup(wVersionRequested, &wsaData); 
- 
-if (err != 0) 
-    /* Tell the user that we couldn't find a useable */ 
-    /* winsock.dll.     */ 
-    return; 
- 
-/* Confirm that the Windows Sockets DLL supports 1.1.*/ 
-/* Note that if the DLL supports versions greater */ 
-/* than 1.1 in addition to 1.1, it will still return */ 
-/* 1.1 in wVersion since that is the version we */ 
-/* requested. */ 
- 
-if ( LOBYTE( wsaData.wVersion ) != 1 || 
-        HIBYTE( wsaData.wVersion ) != 1 ) { 
-    /* Tell the user that we couldn't find a useable */ 
-    /* winsock.dll. */ 
-    WSACleanup(); 
-    return; 
+WORD wVersionRequested;
+WSADATA wsaData;
+int err;
+wVersionRequested = MAKEWORD(1, 1);
+
+err = WSAStartup(wVersionRequested, &wsaData);
+
+if (err != 0)
+    /* Tell the user that we couldn't find a useable */
+    /* winsock.dll.     */
+    return;
+
+/* Confirm that the Windows Sockets DLL supports 1.1.*/
+/* Note that if the DLL supports versions greater */
+/* than 1.1 in addition to 1.1, it will still return */
+/* 1.1 in wVersion since that is the version we */
+/* requested. */
+
+if ( LOBYTE( wsaData.wVersion ) != 1 ||
+        HIBYTE( wsaData.wVersion ) != 1 ) {
+    /* Tell the user that we couldn't find a useable */
+    /* winsock.dll. */
+    WSACleanup();
+    return;
     }
- 
+
 }
 
 
@@ -328,7 +328,7 @@ int error;
    fake varargs -- need to do this way because we wind up calling through
    more levels of indirection than vanilla varargs can handle, and not all
    machines have vfprintf/vsyslog/whatever!  6 params oughta be enough. */
-static void holler (str, p1, p2, p3, p4, p5, p6)
+void holler (str, p1, p2, p3, p4, p5, p6)
   char * str;
   char * p1, * p2, * p3, * p4, * p5, * p6;
 {
@@ -350,7 +350,7 @@ static void holler (str, p1, p2, p3, p4, p5, p6)
 
 /* bail :
    error-exit handler, callable from anywhere */
-static void bail (str, p1, p2, p3, p4, p5, p6)
+void bail (str, p1, p2, p3, p4, p5, p6)
   char * str;
   char * p1, * p2, * p3, * p4, * p5, * p6;
 {
@@ -489,7 +489,7 @@ static int comparehosts (poop, hp)
 #endif
 /* The DNS spec is officially case-insensitive, but for those times when you
    *really* wanna see any and all discrepancies, by all means define this. */
-#ifdef ANAL			
+#ifdef ANAL
   if (strcmp (poop->name, hp->h_name) != 0) {		/* case-sensitive */
 #else
   if (strcasecmp (poop->name, hp->h_name) != 0) {	/* normal */
@@ -942,7 +942,7 @@ static int doconnect (rad, rp, lad, lp)
   if (gatesidx) {		/* if we wanted any srcrt hops ... */
 /* don't even bother compiling if we can't do IP options here! */
 /* #ifdef IP_OPTIONS */
-#ifndef WIN32 
+#ifndef WIN32
     if (! optbuf) {		/* and don't already *have* a srcrt set */
       char * opp;		/* then do all this setup hair */
       optbuf = Hmalloc (48);
@@ -1430,7 +1430,7 @@ static int readwrite (fd)
 #if 1
   /* sets stdin and stdout to binary so no crlf translation if its a tty */
   if (!_isatty( 1 ))
-	_setmode( 1, _O_BINARY ); 
+	_setmode( 1, _O_BINARY );
 
   if ((istty = _isatty( 0 )) == FALSE)
 	_setmode( 0, _O_BINARY ); /* (weld) I think we want to do this */
@@ -1479,7 +1479,7 @@ static int readwrite (fd)
       goto shovel;			/* and go handle it first */
     }
     *ding2 = *ding1;			/* FD_COPY ain't portable... */
-	
+
 /* some systems, notably linux, crap into their select timers on return, so
    we create a expendable copy and give *that* to select.  *Fuck* me ... */
     if (timer1)
@@ -1528,7 +1528,7 @@ static int readwrite (fd)
 			shutdown(fd, 0x02);  /* Kirby */
 			closesocket (fd);
 			FD_ZERO(ding1);
-			WSASetLastError(0); 
+			WSASetLastError(0);
 			return (0);			/* not an error! */
 		}
     } /* select timeout */
@@ -1833,7 +1833,7 @@ int main (argc, argv)
   errno = 0;
   gatesptr = 4;
 #ifndef WIN32
-  h_errno = 0;	
+  h_errno = 0;
 #endif
 /* catch a signal or two for cleanup */
 #ifdef NTFIXTHIS
@@ -1891,7 +1891,7 @@ recycle:
 
 /* If your shitbox doesn't have getopt, step into the nineties already. */
 /* optarg, optind = next-argv-component [i.e. flag arg]; optopt = last-char */
-   while ((x = getopt (argc, argv, "adg:G:hi:lLno:p:rs:tuvw:zx")) != EOF) {
+   while ((x = getopt (argc, argv, "ade:g:G:hi:lLno:p:rs:tuvw:x")) != EOF) {
 /* Debug (("in go: x now %c, optarg %x optind %d", x, optarg, optind)) */
     switch (x) {
       case 'a':
@@ -1903,7 +1903,7 @@ recycle:
 	break;
 #endif
 	        case 'L':				/* listen then cycle back to start instead of exiting */
-	o_listen++; 
+	o_listen++;
   	cycle = 1;
 	  break;
 
@@ -2022,7 +2022,7 @@ recycle:
       bail ("can't open %s", stage);
     stage = (unsigned char *) Hmalloc (100);
   }
- 
+
 
 /* optind is now index of first non -x arg */
 Debug (("after go: x now %c, optarg %x optind %d", x, optarg, optind))
@@ -2132,7 +2132,7 @@ Debug (("netfd %d from port %d to port %d", netfd, ourport, curport))
 	doexec (netfd);
 #endif /* GAPING_SECURITY_HOLE */
 	if (! o_zero)
-#ifdef WIN32 
+#ifdef WIN32
 #ifdef GAPING_SECURITY_HOLE
 	if (!pr00gie)  // doexec does the read/write for win32
 #endif
@@ -2171,7 +2171,7 @@ Debug (("netfd %d from port %d to port %d", netfd, ourport, curport))
     holler ("sent %d, rcvd %d", wrote_net, wrote_out);
 
 #ifdef WIN32
-    WSACleanup(); 
+    WSACleanup();
 #endif
 	free(randports);
 
@@ -2193,7 +2193,7 @@ Debug (("netfd %d from port %d to port %d", netfd, ourport, curport))
 static int helpme()
 {
   o_verbose = 1;
-  holler ("NetCat for Windows v" VERSION " https://github.com/diegocr/netcat\n\
+  holler ("NetCat for Windows v" VERSION " https://github.com/hectorm/netcat\n\
 connect to somewhere:	nc [-options] hostname port[s] [ports] ... \n\
 listen for inbound:	nc -l -p port [options] [hostname] [port]\n\
 options:");
